@@ -2,6 +2,7 @@
 #include    <GLFW/glfw3.h>
 
 #include    <iostream>
+#include    <cmath>
 
 //------------------------------------------------------------------------------
 //
@@ -10,11 +11,9 @@ static const char* vertexShaderSource =
 
         "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
-        "out vec4 vertexColor;"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "   vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);"
         "}\0";
 
 //------------------------------------------------------------------------------
@@ -23,11 +22,11 @@ static const char* vertexShaderSource =
 static const char* fragmentShaderSource =
 
         "#version 330 core\n"
-        "in vec4 vertexColor;"
+        "uniform vec4 ourColor;"
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vertexColor;\n"
+        "   FragColor = ourColor;\n"
         "}\0";
 
 //------------------------------------------------------------------------------
@@ -155,7 +154,17 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Формируем значение зеленого компонента в зависимости от времени
+        float time = glfwGetTime();
+        float green = (sin(time) / 2.0f) + 0.5f;
+        // Получаем ссылку на uniform с именем ourColor из шейдерной программы
+        GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
         glUseProgram(shaderProgram);
+        // Передаем сформированное нами значение цвета во
+        // фрагментный шейдер
+        glUniform4f(vertexColorLocation, 0.0f, green, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
