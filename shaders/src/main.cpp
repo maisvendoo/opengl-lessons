@@ -4,33 +4,7 @@
 #include    <iostream>
 #include    <cmath>
 
-//------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
-static const char* vertexShaderSource =
-
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec3 aColor;\n"
-        "out vec3 ourColor;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos, 1.0);\n"
-        "   ourColor = aColor;"
-        "}\0";
-
-//------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
-static const char* fragmentShaderSource =
-
-        "#version 330 core\n"
-        "in vec3 ourColor;"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(ourColor, 1.0f);\n"
-        "}\0";
+#include    "shader.h"
 
 //------------------------------------------------------------------------------
 //
@@ -113,47 +87,9 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
-    // Создаем вершинный шейдер и выполняем его компиляцию
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-
-    GLint success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        std::cout << "ERROR: Vertex shader: " << infoLog << std::endl;
-    }
-
-    // Создаем фрагментный шейдер и компилируем его
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-        std::cout << "ERROR: Fragment shader: " << infoLog << std::endl;
-    }
-
-    // Компонуем шейдеры в шейдерную программу
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cout << "ERROR: Link shader program: " << infoLog << std::endl;
-    }
+    // Загружаем и обрабатываем шейдеры
+    Shader ourShader("../sources/shaders/shaders/shader.vert",
+                     "../sources/shaders/shaders/shader.frag");
 
     // Главный цикл приложения
     while (!glfwWindowShouldClose(window))
@@ -162,7 +98,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);        
 
-        glUseProgram(shaderProgram);
+        ourShader.use();
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -171,11 +107,7 @@ int main()
         glfwSwapBuffers(window);
         // Обработка событий
         glfwPollEvents();
-    }
-
-    // Уничтожаем шейдеры
-    glDeleteShader(fragmentShader);
-    glDeleteShader(vertexShader);
+    }    
 
     // Освобождаем ресурсы, занятые GLFW
     glfwTerminate();
