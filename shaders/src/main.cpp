@@ -11,9 +11,12 @@ static const char* vertexShaderSource =
 
         "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec3 aColor;\n"
+        "out vec3 ourColor;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "   gl_Position = vec4(aPos, 1.0);\n"
+        "   ourColor = aColor;"
         "}\0";
 
 //------------------------------------------------------------------------------
@@ -22,11 +25,11 @@ static const char* vertexShaderSource =
 static const char* fragmentShaderSource =
 
         "#version 330 core\n"
-        "uniform vec4 ourColor;"
+        "in vec3 ourColor;"
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = ourColor;\n"
+        "   FragColor = vec4(ourColor, 1.0f);\n"
         "}\0";
 
 //------------------------------------------------------------------------------
@@ -61,7 +64,7 @@ int main()
     // Создаем экземпляр окна приложения
     GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH,
                                           SCREEN_HEIGHT,
-                                          "Simple triangle",
+                                          "Shaders example",
                                           nullptr,
                                           nullptr);
 
@@ -88,11 +91,12 @@ int main()
     // размеров окна
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-    // Задаем массив вершин
+    // Задаем массив вершин, каждой вершине присваиваем дополнительный
+    // атрибут - цвет
     GLfloat vertices[] = {
-      -0.5f, -0.5f, 0.0f,
-       0.5f, -0.5f, 0.0f,
-       0.0f,  0.5f, 0.0f
+      -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+       0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+       0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
     };
 
     // Создаем объект буфера вершин (Vertex Buffer OBject - VBO)
@@ -102,8 +106,12 @@ int main()
     glBindVertexArray(VAO);    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) 0);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) 0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
     // Создаем вершинный шейдер и выполняем его компиляцию
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -152,18 +160,9 @@ int main()
     {
         // Заполняем цветовой буфер заданным цветом
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Формируем значение зеленого компонента в зависимости от времени
-        float time = glfwGetTime();
-        float green = (sin(time) / 2.0f) + 0.5f;
-        // Получаем ссылку на uniform с именем ourColor из шейдерной программы
-        GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        glClear(GL_COLOR_BUFFER_BIT);        
 
         glUseProgram(shaderProgram);
-        // Передаем сформированное нами значение цвета во
-        // фрагментный шейдер
-        glUniform4f(vertexColorLocation, 0.0f, green, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
