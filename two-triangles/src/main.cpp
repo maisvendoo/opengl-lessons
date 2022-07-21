@@ -87,26 +87,35 @@ int main()
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
     // Задаем массив вершин
-    GLfloat vertices[] = {
+    GLfloat vertices1[] = {
         -1.0f, 0.0f, 0.0f,
         -0.75f, 0.5f, 0.0f,
-        -0.5f, 0.0f, 0.0f,
+        -0.5f, 0.0f, 0.0f
+    };
 
+    GLfloat vertices2[] = {
          0.5f, 0.0f, 0.0f,
          0.75f, 0.5f, 0.0f,
          1.0f, 0.0f, 0.0f
     };
 
-    // Создаем объект буфера вершин (Vertex Buffer OBject - VBO)
-    GLuint VBO, VAO;
-    glGenBuffers(1, &VBO);    
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    GLuint VBOs[2], VAOs[2];
 
-    // Выгружаем данные вершин в видеоустройство
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // Создаем сразу два буфера массивов вершин
+    glGenVertexArrays(2, VAOs);
+    glGenBuffers(2, VBOs);
 
+    // Подготавливаем данны в GPU для первого треугольника
+    glBindVertexArray(VAOs[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    // Подготавливаем данны в GPU для второго треугольника
+    glBindVertexArray(VAOs[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) 0);
     glEnableVertexAttribArray(0);
 
@@ -160,8 +169,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(VAOs[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(VAOs[1]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // Переключаем экранный буфер (двойная буферизация)
         glfwSwapBuffers(window);
