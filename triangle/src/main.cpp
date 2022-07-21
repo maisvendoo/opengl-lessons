@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-const char* vertexShaderSource =
+static const char* vertexShaderSource =
 
         "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
@@ -18,7 +18,7 @@ const char* vertexShaderSource =
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-const char* fragmentShaderSource =
+static const char* fragmentShaderSource =
 
         "#version 330 core\n"
         "out vec4 FragColor;\n"
@@ -26,6 +26,12 @@ const char* fragmentShaderSource =
         "{\n"
         "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
         "}\0";
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+static const int SCREEN_WIDTH = 800;
+static const int SCREEN_HEIGHT = 600;
 
 //------------------------------------------------------------------------------
 //
@@ -51,9 +57,9 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Создаем экземпляр окна приложения
-    GLFWwindow *window = glfwCreateWindow(1280,
-                                          720,
-                                          "Hello, modern OpenGL!",
+    GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH,
+                                          SCREEN_HEIGHT,
+                                          "Simple triangle",
                                           nullptr,
                                           nullptr);
 
