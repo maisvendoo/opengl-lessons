@@ -18,13 +18,25 @@ static const char* vertexShaderSource =
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-static const char* fragmentShaderSource =
+static const char* fragmentShaderSource1 =
 
         "#version 330 core\n"
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
         "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "}\0";
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+static const char* fragmentShaderSource2 =
+
+        "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main()\n"
+        "{\n"
+        "   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
         "}\0";
 
 //------------------------------------------------------------------------------
@@ -134,30 +146,57 @@ int main()
         std::cout << "ERROR: Vertex shader: " << infoLog << std::endl;
     }
 
-    // Создаем фрагментный шейдер и компилируем его
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
+    // Создаем фрагментный шейдер 1 и компилируем его
+    GLuint fragmentShader1 = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader1, 1, &fragmentShaderSource1, nullptr);
+    glCompileShader(fragmentShader1);
 
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(fragmentShader1, GL_COMPILE_STATUS, &success);
 
     if (!success)
     {
-        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+        glGetShaderInfoLog(fragmentShader1, 512, nullptr, infoLog);
         std::cout << "ERROR: Fragment shader: " << infoLog << std::endl;
     }
 
-    // Компонуем шейдеры в шейдерную программу
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    // Создаем фрагментный шейдер 1 и компилируем его
+    GLuint fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, nullptr);
+    glCompileShader(fragmentShader2);
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetShaderiv(fragmentShader2, GL_COMPILE_STATUS, &success);
 
     if (!success)
     {
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        glGetShaderInfoLog(fragmentShader2, 512, nullptr, infoLog);
+        std::cout << "ERROR: Fragment shader: " << infoLog << std::endl;
+    }
+
+    // Компонуем шейдеры в шейдерную программу 1
+    GLuint shaderProgram1 = glCreateProgram();
+    glAttachShader(shaderProgram1, vertexShader);
+    glAttachShader(shaderProgram1, fragmentShader1);
+    glLinkProgram(shaderProgram1);
+
+    glGetProgramiv(shaderProgram1, GL_LINK_STATUS, &success);
+
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram1, 512, nullptr, infoLog);
+        std::cout << "ERROR: Link shader program: " << infoLog << std::endl;
+    }
+
+    // Компонуем шейдеры в шейдерную программу 2
+    GLuint shaderProgram2 = glCreateProgram();
+    glAttachShader(shaderProgram2, vertexShader);
+    glAttachShader(shaderProgram2, fragmentShader2);
+    glLinkProgram(shaderProgram2);
+
+    glGetProgramiv(shaderProgram2, GL_LINK_STATUS, &success);
+
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram2, 512, nullptr, infoLog);
         std::cout << "ERROR: Link shader program: " << infoLog << std::endl;
     }
 
@@ -168,9 +207,11 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        glUseProgram(shaderProgram1);
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUseProgram(shaderProgram2);
         glBindVertexArray(VAOs[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -181,7 +222,7 @@ int main()
     }
 
     // Уничтожаем шейдеры
-    glDeleteShader(fragmentShader);
+    glDeleteShader(fragmentShader1);
     glDeleteShader(vertexShader);
 
     // Освобождаем ресурсы, занятые GLFW
