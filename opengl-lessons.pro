@@ -9,3 +9,4 @@ SUBDIRS += ./two-triangles
 SUBDIRS += ./shaders
 SUBDIRS += ./texture
 SUBDIRS += ./transform
+SUBDIRS += ./mvp
