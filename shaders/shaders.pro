@@ -39,7 +39,9 @@ unix {
 
 INCLUDEPATH += ./include
 INCLUDEPATH += ../deps/glad/include
+INCLUDEPATH += ../deps/shader_s/include
 
 HEADERS += $$files(./include/*.h)
 SOURCES += $$files(./src/*.cpp)
 SOURCES += ../deps/glad/src/glad.c
+SOURCES += ../deps/shader_s/src/shader.cpp
