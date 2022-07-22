@@ -22,7 +22,7 @@ win32 {
     INCLUDEPATH += $(GLFW_DIR)/include
 
     LIBS += -L$(GLFW_DIR)/bin -lglfw3
-
+    LIBS += -L../../lib -lshader_s
 }
 
 unix {
@@ -39,9 +39,8 @@ unix {
 
 INCLUDEPATH += ./include
 INCLUDEPATH += ../deps/glad/include
-INCLUDEPATH += ../deps/shader_s/include
+INCLUDEPATH += ../shader_s/include
 
 HEADERS += $$files(./include/*.h)
 SOURCES += $$files(./src/*.cpp)
 SOURCES += ../deps/glad/src/glad.c
-SOURCES += ../deps/shader_s/src/shader.cpp

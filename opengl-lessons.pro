@@ -2,6 +2,8 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
+SUBDIRS += ./shader_s
+
 SUBDIRS += ./hello
 SUBDIRS += ./triangle
 SUBDIRS += ./quad
