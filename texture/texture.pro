@@ -39,6 +39,7 @@ unix {
 
 INCLUDEPATH += ./include
 INCLUDEPATH += ../deps/glad/include
+INCLUDEPATH += ../deps/glm/include
 INCLUDEPATH += ../shader_s/include
 INCLUDEPATH += ../deps/stb/include
 

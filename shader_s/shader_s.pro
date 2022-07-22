@@ -19,7 +19,8 @@ unix {
 
 INCLUDEPATH += ./include
 INCLUDEPATH += ../deps/glad/include
+INCLUDEPATH += ../deps/glm/include
 
 HEADERS += $$files(./include/*.h)
 SOURCES += $$files(./src/*.cpp)
-#SOURCES += ../deps/glad/src/glad.c
+SOURCES += ../deps/glad/src/glad.c

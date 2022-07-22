@@ -212,14 +212,9 @@ int main()
 
         ourShader.use();
 
-        GLuint modelLoc = glGetUniformLocation(ourShader.getProgramID(), "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        GLuint viewLoc = glGetUniformLocation(ourShader.getProgramID(), "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-        GLuint projectionLoc = glGetUniformLocation(ourShader.getProgramID(), "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        ourShader.setMat4("model", model);
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
