@@ -5,7 +5,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++17
 
-TARGET = texture
+TARGET = transform
 
 DESTDIR = ../../bin
 
@@ -40,6 +40,7 @@ unix {
 INCLUDEPATH += ./include
 INCLUDEPATH += ../deps/glad/include
 INCLUDEPATH += ../deps/stb/include
+INCLUDEPATH += ../deps/glm/include
 
 HEADERS += $$files(./include/*.h)
 SOURCES += $$files(./src/*.cpp)

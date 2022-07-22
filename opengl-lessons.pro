@@ -8,3 +8,4 @@ SUBDIRS += ./quad
 SUBDIRS += ./two-triangles
 SUBDIRS += ./shaders
 SUBDIRS += ./texture
+SUBDIRS += ./transform

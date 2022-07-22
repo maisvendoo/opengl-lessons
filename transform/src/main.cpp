@@ -1,11 +1,4 @@
-#include    <glad/glad.h>
-#include    <GLFW/glfw3.h>
-#include    <stb_image.h>
-
-#include    <iostream>
-#include    <cmath>
-
-#include    "shader.h"
+#include    "main.h"
 
 //------------------------------------------------------------------------------
 //
@@ -39,7 +32,7 @@ int main()
     // Создаем экземпляр окна приложения
     GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH,
                                           SCREEN_HEIGHT,
-                                          "Texture example",
+                                          "Transform example",
                                           nullptr,
                                           nullptr);
 
@@ -177,8 +170,8 @@ int main()
     }
 
     // Загружаем и обрабатываем шейдеры
-    Shader ourShader("../sources/resources/shaders/face.vert",
-                     "../sources/resources/shaders/face.frag");
+    Shader ourShader("../sources/resources/shaders/transform.vert",
+                     "../sources/resources/shaders/transform.frag");
 
     ourShader.use();
     ourShader.setInt("texture1", 0);
@@ -197,6 +190,15 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
 
         ourShader.use();
+
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::rotate(trans, (float) (glfwGetTime() * 2.0), glm::vec3(0.0f, 0.0f, 1.0f));
+        //trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 1.0f));
+
+        GLuint transformLoc = glGetUniformLocation(ourShader.getProgramID(),
+                                                   "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
