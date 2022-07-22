@@ -88,8 +88,8 @@ int main()
     glEnableVertexAttribArray(1);
 
     // Загружаем и обрабатываем шейдеры
-    Shader ourShader("../sources/shaders/shaders/shader.vert",
-                     "../sources/shaders/shaders/shader.frag");
+    Shader ourShader("../sources/resources/shaders/triangle.vert",
+                     "../sources/resources/shaders/triangle.frag");
 
     // Главный цикл приложения
     while (!glfwWindowShouldClose(window))

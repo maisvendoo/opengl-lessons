@@ -11,7 +11,7 @@
 //
 //------------------------------------------------------------------------------
 static const int SCREEN_WIDTH = 800;
-static const int SCREEN_HEIGHT = 600;
+static const int SCREEN_HEIGHT = 800;
 
 //------------------------------------------------------------------------------
 //
@@ -69,13 +69,19 @@ int main()
     // Задаем массив вершин, каждой вершине присваиваем дополнительный
     // атрибут - цвет
     GLfloat vertices[] = {
-      -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+       0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-       0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 0.5f, 1.0f
+      -0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+      -0.5,  -0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+    };
+
+    GLuint indices[] = {
+      0, 1, 2,
+      2, 1, 3
     };
 
     // Создаем объект буфера вершин (Vertex Buffer OBject - VBO)
-    GLuint VBO, VAO;
+    GLuint VBO, VAO, EBO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);    
@@ -91,17 +97,21 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *) (6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
 
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // Загружаем и подготавливаем текстуру
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("../sources/texture/img/wall.jpg",
+    unsigned char *data = stbi_load("../sources/resources/img/wall.jpg",
                                     &width, &height, &nrChannels, 0);
 
     // Создаем один текстурный объект
-    GLuint texture;
-    glGenTextures(1, &texture);
+    GLuint texture1;
+    glGenTextures(1, &texture1);
 
     // Связываем текстурный объект с конкретным типамо текстуры - 2D-текстура
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     // Указываем способ наложения текстуры
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -130,9 +140,49 @@ int main()
         stbi_image_free(data);
     }
 
+    // Создаем второй текстурный объект
+    GLuint texture2;
+    glGenTextures(1, &texture2);
+
+    // Связываем текстурный объект с конкретным типамо текстуры - 2D-текстура
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // Указываем способ наложения текстуры
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Указываем способ фильтрации текстуры
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Переворачиваем PNG перед загрузкой
+    stbi_set_flip_vertically_on_load(true);
+    data = stbi_load("../sources/resources/img/awesomeface.png",
+                     &width, &height, &nrChannels, 0);
+
+    if (data !=  nullptr)
+    {
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RGBA,
+                     width,
+                     height,
+                     0,
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     data);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
+    }
+
     // Загружаем и обрабатываем шейдеры
-    Shader ourShader("../sources/texture/shaders/shader.vert",
-                     "../sources/texture/shaders/shader.frag");
+    Shader ourShader("../sources/resources/shaders/face.vert",
+                     "../sources/resources/shaders/face.frag");
+
+    ourShader.use();
+    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture2", 1);
 
     // Главный цикл приложения
     while (!glfwWindowShouldClose(window))
@@ -141,11 +191,14 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);        
 
-        ourShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        ourShader.use();
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Переключаем экранный буфер (двойная буферизация)
         glfwSwapBuffers(window);
