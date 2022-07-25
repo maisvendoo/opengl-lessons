@@ -14,4 +14,6 @@
 
 #include    "shader.h"
 
+#include    "camera.h"
+
 #endif // MAIN_H

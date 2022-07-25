@@ -42,6 +42,7 @@ INCLUDEPATH += ../deps/glad/include
 INCLUDEPATH += ../shader_s/include
 INCLUDEPATH += ../deps/stb/include
 INCLUDEPATH += ../deps/glm/include
+INCLUDEPATH += ../camera/include
 
 HEADERS += $$files(./include/*.h)
 SOURCES += $$files(./src/*.cpp)
