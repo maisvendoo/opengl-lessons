@@ -6,12 +6,23 @@
 static const int SCREEN_WIDTH = 800;
 static const int SCREEN_HEIGHT = 800;
 
+static glm::mat4 projection = glm::mat4(1.0f);
+
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 void resize_callback(GLFWwindow *window, int width, int height)
 {
     (void) window;
+
+    if (height == 0)
+        height = 1;
+
+    projection = glm::perspective(
+                glm::radians(45.0f),
+                static_cast<float>(width) / static_cast<float>(height),
+                0.1f,
+                100.0f);
 
     glViewport(0, 0, width, height);
 }
@@ -165,7 +176,7 @@ int main()
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    glm::mat4 projection = glm::perspective(
+    projection = glm::perspective(
                 glm::radians(45.0f),
                 static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT),
                 0.1f,
