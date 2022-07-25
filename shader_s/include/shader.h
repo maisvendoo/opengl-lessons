@@ -40,6 +40,12 @@ public:
         glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
     }
 
+    void setVec3(const std::string &name, const glm::vec3 &vec)
+    {
+        GLuint location = glGetUniformLocation(progID, name.c_str());
+        glUniform3fv(location, 1, &vec[0]);
+    }
+
 private:
 
     GLuint progID;
