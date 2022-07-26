@@ -54,6 +54,12 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         camera.ProcessKeyboard(LEFT, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 //------------------------------------------------------------------------------
@@ -260,6 +266,7 @@ int main()
     cubeShader.use();
     cubeShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
     cubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
 
     // Главный цикл приложения
     while (!glfwWindowShouldClose(window))
@@ -275,35 +282,43 @@ int main()
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cubeShader.use();
-
+        // Берем видовую матрицу из класса камеры
         glm::mat4 view = camera.GetViewMatrix();
-        cubeShader.setMat4("view", view);
-        cubeShader.setMat4("projection", projection);
-
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-        cubeShader.setVec3("lightPos", lightPos);
-
-        glBindVertexArray(cubeVAO);
-
-        glm::mat4 model = glm::mat4(1.0f);
-
-        cubeShader.setMat4("model", model);
-
-        glBindVertexArray(cubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         lightShader.use();
+
+        // Задаем для источника видовую матрицу и матрицу проекции
         lightShader.setMat4("view", view);
         lightShader.setMat4("projection", projection);
 
+        // Позиционируем источник, через матрицу модели
+        glm::mat4 model = glm::mat4(1.0f);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
+        glm::mat4 rot_mat = glm::rotate(model, glm::radians(5.0f * (float) glfwGetTime()), glm::vec3(0.0f, 1.0f, -0.5f));
+        model = glm::translate(rot_mat, lightPos);
+        model = glm::scale(model, glm::vec3(0.1f));
         lightShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        cubeShader.use();
+
+        cubeShader.setMat4("view", view);
+        cubeShader.setMat4("projection", projection);
+
+        cubeShader.setVec3("viewPos", camera.Position);
+
+        glBindVertexArray(cubeVAO);
+
+        model = glm::mat4(1.0f);
+
+        glm::vec3 lp = glm::vec3(rot_mat * glm::vec4(lightPos, 1.0f));
+        cubeShader.setMat4("model", model);
+        cubeShader.setVec3("lightPos", lp);
+
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);        
 
         // Переключаем экранный буфер (двойная буферизация)
         glfwSwapBuffers(window);

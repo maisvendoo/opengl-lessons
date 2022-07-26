@@ -17,7 +17,9 @@ enum Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 const float YAW = -90.0f;
@@ -81,6 +83,12 @@ public:
 
         if (direction == RIGHT)
             Position += Right * motion;
+
+        if (direction == UP)
+            Position += Up * motion;
+
+        if (direction == DOWN)
+            Position -= Up * motion;
     }
 
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
