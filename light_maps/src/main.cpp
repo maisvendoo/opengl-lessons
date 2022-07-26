@@ -275,6 +275,10 @@ int main()
     create_texture("../sources/resources/img/container.png", diffuseMap);
     cubeShader.setInt("material.diffuse", 0);
 
+    GLuint specularMap;
+    create_texture("../sources/resources/img/container_specular.png", specularMap);
+    cubeShader.setInt("material.specular", 1);
+
     // Главный цикл приложения
     while (!glfwWindowShouldClose(window))
     {
@@ -313,7 +317,9 @@ int main()
         cubeShader.use();
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_PROXY_TEXTURE_2D, diffuseMap);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularMap);
 
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
@@ -328,7 +334,6 @@ int main()
         cubeShader.setMat4("model", model);
         cubeShader.setVec3("light.position", lp);
 
-        cubeShader.setVec3("material.specular", glm::vec3(0.393548f, 0.271906f, 0.166721f));
         cubeShader.setFloat("material.shininess", 32.0f);
 
         cubeShader.setVec3("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
