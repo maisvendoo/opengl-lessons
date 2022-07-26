@@ -14,3 +14,4 @@ SUBDIRS += ./transform
 SUBDIRS += ./mvp
 SUBDIRS += ./cube
 SUBDIRS += ./colors
+SUBDIRS += ./basic_lighting
