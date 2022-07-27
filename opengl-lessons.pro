@@ -17,3 +17,5 @@ SUBDIRS += ./colors
 SUBDIRS += ./basic_lighting
 SUBDIRS += ./material
 SUBDIRS += ./light_maps
+SUBDIRS += ./light_casters
+SUBDIRS += ./spot_light

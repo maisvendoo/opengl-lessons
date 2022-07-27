@@ -15,7 +15,7 @@ uniform Material material;
 //-----------------------------------------------------------------------------
 //      Параметры источника света
 //-----------------------------------------------------------------------------
-struct Light
+struct PointLight
 {
     // Положение
 	vec3 position;
@@ -25,10 +25,14 @@ struct Light
     // Диффузное освещение
 	vec3 diffuse;
     // Отраженный свет
-	vec3 specular;	
+	vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;	
 };
 
-uniform Light light;
+uniform PointLight light;
 
 // Нормаль к фрагменту (из вершинного шейдера)
 in vec3 Normal;
@@ -64,8 +68,11 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular =  light.specular * spec * vec3(texture(material.specular, TexCoords));
 
+    float dist = length(lightDir);
+    float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+
     // Result fragment color (суммарное значение цвета фрагмента)
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = (ambient + diffuse + specular) * attenuation;
 
     FragColor = vec4(result, 1.0);
 }

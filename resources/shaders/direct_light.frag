@@ -15,10 +15,10 @@ uniform Material material;
 //-----------------------------------------------------------------------------
 //      Параметры источника света
 //-----------------------------------------------------------------------------
-struct Light
+struct DirectLight
 {
     // Положение
-	vec3 position;
+	vec3 direction;
 
     // Рассеянное освещение
 	vec3 ambient;
@@ -28,7 +28,7 @@ struct Light
 	vec3 specular;	
 };
 
-uniform Light light;
+uniform DirectLight light;
 
 // Нормаль к фрагменту (из вершинного шейдера)
 in vec3 Normal;
@@ -51,7 +51,7 @@ void main()
 
     // Diffuse (дейсвие диффузного света на фрагмент)
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
+    vec3 lightDir = normalize(-light.direction);
 
     float diff = max(dot(norm, lightDir), 0.0);
 
